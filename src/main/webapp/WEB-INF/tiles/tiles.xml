@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+	<definition name="baseLayout" template="/WEB-INF/layouts/baseLayout.jsp" />
+
+	<definition name="simpleLayout" extends="baseLayout">
+		<put-attribute name="header">
+			<definition template="/WEB-INF/layouts/empty.jsp" />
+		</put-attribute>
+		<put-attribute name="body">
+			<definition template="/WEB-INF/layouts/content.jsp" />
+		</put-attribute>
+		<put-attribute name="footer">
+			<definition template="/WEB-INF/layouts/empty.jsp" />
+		</put-attribute>
+	</definition>
+	
+	<definition name="topNavLayout" extends="baseLayout">
+		<put-attribute name="header" cascade="true">
+			<definition template="/WEB-INF/layouts/header.jsp" />
+		</put-attribute>
+		<put-attribute name="footer" cascade="true">
+			<definition template="/WEB-INF/layouts/footer.jsp" />
+		</put-attribute>
+	</definition>
+	
+	<definition name="contentLayout" extends="topNavLayout">
+		<put-attribute name="body" cascade="true">
+			<definition template="/WEB-INF/layouts/content.jsp" />
+		</put-attribute>
+	</definition>
+	
+	<definition name="leftNavLayout" extends="topNavLayout">
+		<put-attribute name="body" cascade="true">
+			<definition template="/WEB-INF/layouts/leftNavContent.jsp" />
+		</put-attribute>
+	</definition>
+
+	<definition name="mytableLayout" extends="leftNavLayout">
+		<put-attribute name="leftNav" value="/WEB-INF/views/mytable/mytableLeftNav.jsp" cascade="true" />
+		<put-list-attribute name="csses">
+			<add-attribute value="/WEB-INF/views/mytable/mytableCss.jsp" />
+		</put-list-attribute>
+		<put-list-attribute name="jses">
+			<add-attribute value="/WEB-INF/views/mytable/mytableJs.jsp" />
+		</put-list-attribute>
+	</definition>
+
+	<definition name="mytable/remoteLoad" extends="mytableLayout">
+		<put-attribute name="content" value="/WEB-INF/views/mytable/remoteLoad.jsp" cascade="true" />
+	</definition>
+	
+	<definition name="mytable/formEdit" extends="mytableLayout">
+		<put-attribute name="content" value="/WEB-INF/views/mytable/formEdit.jsp" cascade="true" />
+	</definition>
+	
+	<definition name="mytable/customColumn" extends="mytableLayout">
+		<put-attribute name="content" value="/WEB-INF/views/mytable/customColumn.jsp" cascade="true" />
+	</definition>
+</tiles-definitions>
