@@ -30,4 +30,9 @@ public class MytableController {
 	public String customColumn() {
 		return "mytable/customColumn";
 	}
+	
+	@RequestMapping(value="/advancedFunc")
+	public String advancedFunc() {
+		return "mytable/advancedFunc";
+	}
 }

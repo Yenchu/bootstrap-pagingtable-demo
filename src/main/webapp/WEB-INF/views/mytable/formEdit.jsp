@@ -34,7 +34,6 @@
 		],
 		isMultiSelect: true,
 		isPageable: true,
-		pagerLocation: 'top',
 		remote: {url:'${contextPath}/members', editUrl:'${contextPath}/members/edit', deleteUrl:'${contextPath}/members/delete'}
 	};
 	

@@ -41,11 +41,11 @@ public class MemberController {
 	public Page<Member> get(@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, HttpServletRequest request) {
 		log.debug("{} get members.", WebUtil.getUserAddress(request));
 		WebUtil.logParameters(request);
-		try {
+		/*try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			log.error(e.getMessage(), e);
-		}
+		}*/
 		List<Member> members = getMembers(request);
 		if (pageable != null) {
 			return page(members, pageable);

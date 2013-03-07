@@ -306,15 +306,16 @@
 				} else {
 					that.selectRow($this, e);
 				}
-				$element.trigger({type:'clickRow', rowId:that.getRowId($(this))});
+				$element.trigger({type:'clickRow', rowId:that.getRowId($(this)), orignEvent:e});
 			});
 			
-			$element.off('dblclick.tr.' + ns).on('dblclick.tr.' + ns, 'tbody tr', function() {
-				$element.trigger({type:'dblclickRow', rowId:that.getRowId($(this))});
+			$element.off('dblclick.tr.' + ns).on('dblclick.tr.' + ns, 'tbody tr', function(e) {
+				$element.trigger({type:'dblclickRow', rowId:that.getRowId($(this)), orignEvent:e});
 			});
 			
-			$element.off('contextmenu.tr.' + ns).on('contextmenu.tr.' + ns, 'tbody tr', function() {
-				$element.trigger({type:'rowContextmenu', rowId:that.getRowId($(this))});
+			$element.off('contextmenu.tr.' + ns).on('contextmenu.tr.' + ns, 'tbody tr', function(e) {
+				e.preventDefault();
+				$element.trigger({type:'rowContextmenu', rowId:that.getRowId($(this)), orignEvent:e});
 			});
 			
 			$element.off('mouseenter.tr.' + ns).on('mouseenter.tr.' + ns, 'tbody tr', function() {
@@ -882,7 +883,7 @@
 			}
 			
 			var $form = $('<form/>');
-			$row.find('input, select, textarea').clone().appendTo($form);
+			$row.find('input, select, textarea').appendTo($form);
 			if ($form.find('[name="' + this.keyName + '"]').length < 1) {
 				$form.append('<input type="hidden" name="' + this.keyName + '" value="' + rowId + '" >');
 			}
@@ -1100,6 +1101,7 @@
 		
 		, getCheckboxElement: function(colModel, checkVal) {
 			var elem = '', valueOptions = colModel.valueOptions;
+			checkVal && (checkVal = checkVal.toString());
 			for(var value in valueOptions) {
 				var label = valueOptions[value];
 				var cb = '<input type="checkbox" name="' + colModel.name + '" value="' + value + (value == checkVal ? '" checked="checked">' : '">') + label;
@@ -1110,6 +1112,7 @@
 		
 		, getRadioElement: function(colModel, checkVal) {
 			var elem = '', valueOptions = colModel.valueOptions;
+			checkVal && (checkVal = checkVal.toString());
 			for(var value in valueOptions) {
 				var label = valueOptions[value];
 				var rd = '<input type="radio" name="' + colModel.name + '" value="' + value + (value == checkVal ? '" checked="checked">' : '">') + label;
