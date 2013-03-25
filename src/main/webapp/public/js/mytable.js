@@ -1,5 +1,5 @@
 /* ===================================================
- * mytable.js v0.1.1
+ * mytable.js v0.1.2
  * https://github.com/Yenchu/mytable
  * =================================================== */
 
@@ -20,16 +20,16 @@
 		init: function(element, options) {
 			this.$element = $(element);
 			this.options = $.extend(true, {}, $.fn.mytable.defaults, options);
-
-			this.namespace = compName,
-			this.colModels = this.options.colModels,
-			this.remote = this.options.remote || {},
-			this.rowDataMap = {}, this.selRowIds = [], this.keyName, this.editedRowId, this.newRowId,
+			this.namespace = compName, this.colModels = this.options.colModels, this.remote = this.options.remote || {};
+			
+			// disable multi-select when using restful api
+			this.remote.isRest && (this.options.isMultiSelect = false);
+			
+			this.rowDataMap = {}, this.selRowIds = [], this.keyName, this.editedRowId, this.newRowId, this.optionsUrlCache = {};
 			this.page = 0, this.pageSize = 0, this.totalPages = 0, this.totalRecords = 0, this.sortCol, this.sortDir;
 			
 			this.createTable();
 			this.loadData();
-			
 		}
 	
 		, destroy: function() {
@@ -39,7 +39,7 @@
 		, enable: function() {
 			this.$element.find('.btn').removeClass('disabled');
 			this.addEventHandlers();
-			if (options.isPageable) {
+			if (this.options.isPageable) {
 				this.addPagingEventHandlers();
 			}
 		}
@@ -54,7 +54,7 @@
 			this.createHeader();
 			this.addEventHandlers();
 			
-			if (options.isPageable) {
+			if (this.options.isPageable) {
 				this.createPager();
 				this.addPagingEventHandlers();
 			}
@@ -154,7 +154,7 @@
 			tpl = tpl.replace('{{totalRecords}}', '<span class="total-records"></span>');
 			
 			var dropup = isDropup ? ' dropup' : '';
-			tpl = tpl.replace('{{pageSize}}', ', <div class="btn-group' + dropup + '"><a class="btn dropdown-toggle page-size" data-toggle="dropdown" href="#"><span class="page-size-value"></span> <span class="caret"></span></a><ul class="dropdown-menu page-size-options"></ul></div>');
+			tpl = tpl.replace('{{pageSize}}', ' <div class="btn-group' + dropup + '"><a class="btn dropdown-toggle page-size" data-toggle="dropdown" href="#"><span class="page-size-value"></span> <span class="caret"></span></a><ul class="dropdown-menu page-size-options"></ul></div>');
 			return tpl;
 		}
 	
@@ -199,6 +199,9 @@
 		}
 		
 		, loadRemoteData: function() {
+			// clear cache when loading data from remote
+			this.optionsUrlCache = {};
+			
 			var options = this.options;
 			var remote = this.remote;
 			var url = remote.url;
@@ -225,6 +228,8 @@
 				that.parseData(resps);
 			}).fail(function() {
 				$.error('Loading data from remote failed!');
+				var e = $.Event('remoteLoadError');
+				that.$element.trigger(e);
 			});
 		}
 		
@@ -236,9 +241,14 @@
 			var $loadindBar = $(this.options.loadingBarTemplate);
 			$loadindBar.appendTo($placeholder);
 
-			var $progress = $loadindBar.find('.progress');
-			var x = $element.offset().left + ($element.width() / 2) - ($progress.width() / 2) - 24, 
-				y = $element.offset().top + ($element.height() / 3) - ($progress.height() / 2);
+			var $progress = $loadindBar.find('.progress'), barW, barH;
+			if ($progress) {
+				barW = $progress.width() / 2 + 24, barH = $progress.height() / 2;
+			} else {
+				barW = $loadindBar.width() / 2, barH = $loadindBar.height() / 2;
+			}
+			var x = $element.offset().left + ($element.width() / 2) - barW, 
+				y = $element.offset().top + ($element.height() / 2) - barH;
 			$loadindBar.offset({top:y, left:x});
 		}
 		
@@ -261,13 +271,13 @@
 				
 				if (this.page < 0) {
 					this.page = 0;
-				} else if (this.page >= this.totalPages) {
+				} else if (this.page > 0 && this.page >= this.totalPages) {
 					this.page = this.totalPages - 1;
 				}
 			}
 			
 			this.setRowDataMap(rowDataSet);
-			this.load(rowDataSet);
+			this.load();
 		}
 		
 		, addEventHandlers: function() {
@@ -276,6 +286,8 @@
 			$(document).off('click.' + ns).on('click.' + ns, function(e) {
 				if (that.isFocusout(e)) {
 					that.clearSelectedRow();
+					var e = $.Event('blur');
+					that.$element.trigger(e);
 				}
 			});
 			
@@ -314,7 +326,6 @@
 			});
 			
 			$element.off('contextmenu.tr.' + ns).on('contextmenu.tr.' + ns, 'tbody tr', function(e) {
-				e.preventDefault();
 				$element.trigger({type:'rowContextmenu', rowId:that.getRowId($(this)), orignEvent:e});
 			});
 			
@@ -403,8 +414,8 @@
 			});
 		}
 		
-		, updatePagingButtons: function(page, totalPages) {
-			var $element = this.$element;
+		, updatePagingButtons: function() {
+			var $element = this.$element, page = this.page, totalPages = this.totalPages;
 			var active = this.options.classes.activePagingBtn;
 			if (page <= 0) {
 				$element.find('.goto-first-page').removeClass(active).css('cursor','default');
@@ -422,8 +433,8 @@
 			}
 		}
 
-		, updatePagingElements: function(page, totalPages, pageSize, totalRecords) {
-			var $element = this.$element;
+		, updatePagingElements: function() {
+			var $element = this.$element, page = this.page, totalPages = this.totalPages, pageSize = this.pageSize, totalRecords = this.totalRecords;
 			$element.find('.current-page-value').text((page + 1));
 			$element.find('.total-pages').text(totalPages);
 			
@@ -435,10 +446,11 @@
 			$element.find('.total-records').text(totalRecords);
 			
 			$element.find('.page-size-value').text(pageSize);
-			this.updatePagingButtons(page, totalPages);
+			this.updatePagingButtons();
 		}
 		
-		, load: function(rowDataSet) {
+		, load: function() {
+			var rowDataSet = this.getAllRowData();
 			var e = $.Event('load');
 			e.rowDataSet = rowDataSet;
 			this.$element.trigger(e);
@@ -447,6 +459,14 @@
 	        }
 			
 			var rowLen = rowDataSet.length;
+			if (rowLen < 1) {
+				$('.paging-bar').addClass('hide');
+				return;
+			} else {
+				var $pagingBar = $('.paging-bar');
+				$pagingBar.hasClass('hide') && $pagingBar.removeClass('hide');
+			}
+			
 			var i, len;
 			if (this.options.isPageable) {
 				i = this.page * this.pageSize;
@@ -481,7 +501,7 @@
 			var $tbody = tbody ? $(tbody) : $('<tbody/>').appendTo(this.$element);
 			$tbody.html(tbodyContent);
 			
-			this.options.isPageable && this.updatePagingElements(this.page, this.totalPages, this.pageSize, this.totalRecords);
+			this.options.isPageable && this.updatePagingElements();
 			
 			e = $.Event('loaded');
 			this.$element.trigger(e);
@@ -489,8 +509,7 @@
 		
 		, reload: function() {
 			if (this.options.localData || this.options.loadOnce) {
-				var rowDataSet = this.getAllRowData();
-				this.load(rowDataSet);
+				this.load();
 			} else {
 				this.loadRemoteData();
 			}
@@ -521,10 +540,11 @@
 				sortFun = colModel.sorter;
 			} else {
 				sortFun = function(a, b) {
-					var valA = a[sortCol], valB = b[sortCol];
-					if (colModel.valueOptions) {
-						valA = colModel.valueOptions[valA] || valA;
-						valB = colModel.valueOptions[valB] || valB;
+					var valA = that.getColValue(a, colModel) || '', valB = that.getColValue(b, colModel) || '';
+					var options = that.getColOptions(colModel);
+					if (options) {
+						valA = options[valA] || valA;
+						valB = options[valB] || valB;
 					}
 					if (valA < valB) {
 						return -1;
@@ -570,14 +590,74 @@
 		}
 		
 		, getColContent: function(rowData, colModel) {
-			var colVal = rowData[colModel.name] || '';
+			var colVal = this.getColValue(rowData, colModel);//rowData[colModel.name];
 			if (colModel.formatter) {
 				return colModel.formatter(colVal, rowData);
 			}
-			if (colModel.valueOptions) {
-				return colModel.valueOptions[colVal] || colVal;
+			
+			if (colVal === undefined || colVal === null) {
+				return '';
+			}
+
+			var options = this.getColOptions(colModel);
+			if ($.isArray(colVal)) {
+				if (colVal.length < 1) {
+					return '';
+				}
+				
+				var rtVals = [];
+				var isObj = colVal[0] instanceof Object ? true : false;
+				var subName = colModel['subName'] || options ? 'id' : 'name';
+				for (var i = 0, len = colVal.length; i < len; i++) {
+					var rtVal = isObj ? colVal[i][subName] : colVal[i];
+					if (options) {
+						rtVals.push(options[rtVal] || rtVal);
+					} else {
+						rtVals.push(rtVal);
+					}
+				}
+				return rtVals.join('<br/>');
+			}
+			if (options) {
+				return options[colVal] || colVal;
 			}
 			return colVal;
+		}
+		
+		, getColValue: function(rowData, colModel) {
+			if (colModel.name.indexOf('.') >= 0) {
+				var names = colModel.name.split('.');
+				var data = rowData[names[0]];
+				for (var i = 1, len = names.length; i < len; i++) {
+					data = data[names[i]];
+				}
+				return data;
+			} else {
+				return rowData[colModel.name];
+			}
+		}
+		
+		, getColOptions: function(colModel) {
+			var options = colModel.options;
+			if (!options && colModel.optionsUrl) {
+				var name = colModel.name;
+				var cachedOptions = this.optionsUrlCache[name];
+				if (cachedOptions) {
+					return cachedOptions;
+				}
+				
+				var that = this;
+				$.ajax({
+					url: colModel.optionsUrl,
+					async: false
+				}).done(function(resp) {
+					options = resp;
+					that.optionsUrlCache[name] = options;
+				}).fail(function() {
+					$.error('Loading options data from remote failed!');
+				});
+			}
+			return options;
 		}
 		
 		, getHeader: function() {
@@ -804,7 +884,7 @@
 			
 			for (var i = 0, len = this.colModels.length; i < len; i++) {
 				var colModel = this.colModels[i];
-				var colVal = rowData[colModel.name] || '';
+				var colVal = this.getColValue(rowData, colModel) || '';
 				
 				// keep hidden column but set it uneditable for sending it to server
 				if (colModel.hidden) {
@@ -902,13 +982,11 @@
 				return;
 			}
 			
-			var rowIds, idJoinStr;
+			var rowIds;
 			if ($.isArray(rowId)) {
 				rowIds = rowId;
-				idJoinStr = rowId.join(settings.separator);
 			} else {
 				rowIds = [rowId];
-				idJoinStr = rowId;
 			}
 			
 			var displayItems;
@@ -932,12 +1010,17 @@
 			
 			var that = this;
 			$modal.find('.editing-submit').off('click').on('click', function(e) {
-				that.doDeleteRow(idJoinStr);
+				if (that.remote.isRest) {
+					that.doDeleteRow(rowId);
+				} else {
+					that.doDeleteRow(rowIds, settings.separator);
+				}
 				$modal.modal('hide');
 			});
 		}
 		
 		, doSaveRow: function(rowId, $form) {
+			var isRest = this.remote.isRest;
 			var action = this.isAddingRow(rowId)? 'add' : 'update';
 			
 			var e = $.Event(action);
@@ -947,12 +1030,26 @@
 				this.loadRemoteData();
 				return;
 			}
+			
+			var url, type;
+			if (isRest) {
+				if (action == 'update') {
+					url = this.addIdToUrl(this.remote.url, rowId);
+					type = 'PUT';
+				} else {
+					url = this.remote.url;
+					type = 'POST';
+				}
+			} else {
+				url = $form.attr('action') || this.remote.editUrl;
+				type = $form.attr('method') || 'POST';
+			}
 
 			var that = this;
 			$.ajax({
-				url: $form.attr('action') || this.remote.editUrl,
+				url: url,
 				data: $form.serialize(),
-				type: $form.attr('method') || 'POST'
+				type: type
 			}).done(function(resp) {
 				e = that.isAddingRow(rowId) ? $.Event('added') : $.Event('updated');
 				e.response = resp;
@@ -961,27 +1058,41 @@
 					that.loadRemoteData();
 				}
 			}).fail(function() {
-				$.error('Save operation failed!');
+				$.error(action + ' operation failed!');
+				e = $.Event(action + 'Error');
+				that.$element.trigger(e);
 			});
 		}
 		
-		, doDeleteRow: function(rowId) {
-			var settings = {params:{}};
-			settings.params[this.keyName] = rowId; // if isMultiSelect, seperate ids by comma(default)
+		, doDeleteRow: function(rowId, separator) {
+			var isRest = this.remote.isRest, toDelId;
 			
-			var e = $.Event('delete');
-			e.settings = settings;
+			var e = $.Event('delete'), params = {};
+			toDelId = isRest ? rowId : rowId.join(separator || ',');
+			params[this.keyName] = toDelId;
+			e.params = params;
 			this.$element.trigger(e);
 			if (e.isDefaultPrevented()) {
 				this.loadRemoteData();
 				return;
 			}
 			
+			var url, data, type;
+			if (isRest) {
+				url = this.addIdToUrl(this.remote.url, toDelId);
+				data = {};
+				type = 'DELETE';
+			} else {
+				url = this.remote.deleteUrl;
+				data = params;
+				type = 'POST';
+			}
+			
 			var that = this;
 			$.ajax({
-				url: settings.url || this.remote.deleteUrl,
-				data: settings.params,
-				type: settings.method || 'POST'
+				url: url,
+				data: data,
+				type: type 
 			}).done(function(resp) {
 				e = $.Event('deleted');
 				e.response = resp;
@@ -991,7 +1102,22 @@
 				}
 			}).fail(function() {
 				$.error('Delete operation failed!');
+				e = $.Event('deletError');
+				that.$element.trigger(e);
 			});
+		}
+		
+		, addIdToUrl: function(url, id) {
+			var idx = url.indexOf('?');
+			if (idx > 0) {
+				var qryStr = url.substring(idx + 1);
+				url = url.substring(0, idx);
+				url = url.charAt(url.length - 1) == '/' ? url + id : url + '/' + id;
+				url += '?' + qryStr;
+			} else {
+				url = url.charAt(url.length - 1) == '/' ? url + id : url + '/' + id;
+			}
+			return url;
 		}
 		
 		, enableFormEditing: function(rowId, rowData) {
@@ -1032,18 +1158,18 @@
 			var hiddenElems = '';
 			for (var i = 0, len = this.colModels.length; i < len; i++) {
 				var colModel = this.colModels[i];
-				var colVal = rowData[colModel.name] || '';
+				var colVal = this.getColValue(rowData, colModel) || '';
 				if (colModel.hidden) {
 					hiddenElems += this.getHiddenElement(colModel, colVal);
 					continue;
 				}
 				
-				if (!colModel.editable) {
-					hiddenElems += this.getHiddenElement(colModel, colVal);
-					continue;
+				var elem;
+				if (colModel.editable) {
+					elem = this.getEditor(colVal, colModel, true);
+				} else {
+					elem = this.addLabel(this.getTextElement(colModel, colVal, true), colModel);
 				}
-				
-				var elem = this.getEditor(colVal, colModel, true);
 				form += elem;
 			}
 			hiddenElems != '' && (form += hiddenElems);
@@ -1075,10 +1201,10 @@
 					elem = this.getRadioElement(colModel, colValue);
 					break;
 				case 'select':
-					elem = this.getSelectElement(colModel, false, colValue);
+					elem = this.getSelectElement(colModel, colValue);
 					break;
 				case 'multiselect':
-					elem = this.getSelectElement(colModel, true, colValue);
+					elem = this.getMultiSelectElement(colModel, colValue);
 					break;
 				case 'textarea':
 					elem = this.getTextAreaElement(colModel, colValue);
@@ -1100,10 +1226,10 @@
 		}
 		
 		, getCheckboxElement: function(colModel, checkVal) {
-			var elem = '', valueOptions = colModel.valueOptions;
+			var elem = '', options = this.getColOptions(colModel);
 			checkVal && (checkVal = checkVal.toString());
-			for(var value in valueOptions) {
-				var label = valueOptions[value];
+			for(var value in options) {
+				var label = options[value];
 				var cb = '<input type="checkbox" name="' + colModel.name + '" value="' + value + (value == checkVal ? '" checked="checked">' : '">') + label;
 				elem += '<label class="checkbox inline">' + cb + '</label>';
 			}
@@ -1111,22 +1237,41 @@
 		}
 		
 		, getRadioElement: function(colModel, checkVal) {
-			var elem = '', valueOptions = colModel.valueOptions;
+			var elem = '', options = this.getColOptions(colModel);
 			checkVal && (checkVal = checkVal.toString());
-			for(var value in valueOptions) {
-				var label = valueOptions[value];
+			for(var value in options) {
+				var label = options[value];
 				var rd = '<input type="radio" name="' + colModel.name + '" value="' + value + (value == checkVal ? '" checked="checked">' : '">') + label;
 				elem += '<label class="radio inline">' + rd + '</label>';
 			}
 			return elem;
 		}
 		
-		, getSelectElement: function(colModel, multiple, selectVal) {
-			var elem, valueOptions = colModel.valueOptions;
-			elem = '<select name="' + colModel.name + (multiple ? '" multiple="multiple">' : '">');
-			for(var value in valueOptions) {
-				var label = valueOptions[value];
+		, getSelectElement: function(colModel, selectVal) {
+			var elem = '<select name="' + colModel.name + '">', options = this.getColOptions(colModel);
+			for(var value in options) {
+				var label = options[value];
 				elem += '<option value="' + value + (value == selectVal ? '" selected="selected">' : '">') + label + '</option>';
+			}
+			elem += '</select>';
+			return elem;
+		}
+		
+		, getMultiSelectElement: function(colModel, selectVals) {
+			var elem = '<select name="' + colModel.name + '" multiple="multiple">', options = this.getColOptions(colModel);
+			var isObj = selectVals.length > 0 && selectVals[0] instanceof Object ? true : false;
+			var subName = colModel['subName'] || 'id';
+			for(var value in options) {
+				var label = options[value];
+				var isSel = false;
+				for (var i = 0, len = selectVals.length; i < len; i++) {
+					var selVal = isObj ? selectVals[i][subName] : selectVals[i];
+					if (value == selVal) {
+						isSel = true;
+						break;
+					}
+				}
+				elem += '<option value="' + value + (isSel ? '" selected="selected">' : '">') + label + '</option>';
 			}
 			elem += '</select>';
 			return elem;
@@ -1144,8 +1289,8 @@
 			return '<input class="input-block-level" type="password" name="' + colModel.name + '" value="' + colValue + '">';
 		}
 		
-		, getTextElement: function(colModel, colValue) {
-			return '<input class="input-block-level" type="text" name="' + colModel.name + '" value="' + colValue + '">';
+		, getTextElement: function(colModel, colValue, disabled) {
+			return '<input class="input-block-level" type="text" name="' + colModel.name + '" value="' + colValue + '"' + (disabled ? '" disabled">' : '>');
 		}
 		
 		, addLabel: function(elem, colModel) {

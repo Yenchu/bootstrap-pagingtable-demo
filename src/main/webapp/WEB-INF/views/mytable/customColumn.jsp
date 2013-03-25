@@ -28,9 +28,9 @@
 			{name:'email', header:'Email', width:'20%', editable:true, editor:'textarea'},
 			{name:'birthday', header:'Birthday', width:'20%', sortable:true, editable:true, editor:dateEditor},
 			{name:'sex', header:'Sex', width:'10%', sortable:true, editable:true, editor:'radio'
-				, valueOptions:{'1':'Female', '2':'Male'}},
+				, options:{'1':'Female', '2':'Male'}},
 			{name:'language', header:'Language', width:'10%', sortable:true, editable:true, editor:'select'
-				, valueOptions:{'':'', 'en':'English', 'fr':'French', 'ja':'Japanese', 'zh':'Chinese'}}
+				, options:{'':'', 'en':'English', 'fr':'French', 'ja':'Japanese', 'zh':'Chinese'}}
 		],
 		isPageable: true,
 		loadOnce: true,

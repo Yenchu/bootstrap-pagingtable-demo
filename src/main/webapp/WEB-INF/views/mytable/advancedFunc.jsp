@@ -15,14 +15,18 @@
 			<div>
 				<table id="member-table" class="table table-striped table-bordered"></table>
 			</div>
+			<div class="context-menu dropdown hide">
+				<ul class="dropdown-menu" style="display:block">
+					<li id="act-download"><a href="#"><i class="icon-download-alt"></i> Download</a></li>
+					<li id="act-link"><a href="#"><i class="icon-share"></i> Share link</a></li>
+					<li id="act-rename"><a href="#"><i class="icon-pencil"></i> Rename</a></li>
+					<li id="act-delete"><a href="#"><i class="icon-trash"></i> Delete</a></li>
+					<li id="act-move"><a href="#"><i class="icon-move"></i> Move</a></li>
+					<li id="act-copy"><a href="#"><i class="icon-book"></i> Copy</a></li>
+					<li id="act-revision"><a href="#"><i class="icon-list"></i> Revisions</a></li>
+				</ul>
+			</div>
 		</div>
-	</div>
-	<div class="context-menu dropdown hide">
-		<ul class="dropdown-menu" role="menu" style="display:block">
-			<li><a tabindex="-1" href="#">Regular link</a></li>
-			<li><a tabindex="-1" href="#">Disabled link</a></li>
-			<li><a tabindex="-1" href="#">Another link</a></li>
-		</ul>
 	</div>
 </div>
 <script type="text/javascript">
@@ -35,11 +39,12 @@
 			{name:'email', header:'Email', width:'20%', editable:true, editor:'textarea'},
 			{name:'birthday', header:'Birthday', width:'20%', sortable:true, editable:true, editor:dateEditor},
 			{name:'sex', header:'Sex', width:'10%', sortable:true, editable:true, editor:'select'
-				, valueOptions:{'1':'Female', '2':'Male'}},
+				, options:{'1':'Female', '2':'Male'}},
 			{name:'language', header:'Language', width:'10%', sortable:true, editable:true, editor:'select'
-				, valueOptions:{'':'', 'en':'English', 'fr':'French', 'ja':'Japanese', 'zh':'Chinese'}}
+				, options:{'':'', 'en':'English', 'fr':'French', 'ja':'Japanese', 'zh':'Chinese'}}
 		],
 		inlineEditing: true,
+		isMultiSelect: true,
 		isPageable: true,
 		loadOnce: true,
 		remote: {url:'${contextPath}/members', editUrl:'${contextPath}/members/edit', deleteUrl:'${contextPath}/members/delete'}
@@ -51,14 +56,45 @@
 			editRow(rowId);
 		}).on('rowContextmenu', function(e) {
 			var orignEvent = e.orignEvent;
-			console.log('pageY=' + orignEvent.pageY + ', pageX=' + orignEvent.pageX);
-			$('.context-menu').offset({top:orignEvent.pageY, left:orignEvent.pageX}).removeClass('hide');
+			//console.log('y=' + orignEvent.pageY + ', x=' + orignEvent.pageX);
+			//console.log('y2=' + e.position().top + ', x2=' + e.position().left);
+			$('.context-menu').removeClass('hide').offset({top:orignEvent.pageY, left:orignEvent.pageX});
+			
+			var rowId = e.rowId;
+			var selRowIds = $table.mytable('getSelectedRowIds');
+			if (selRowIds.length > 1) {
+				for (var i = 0, len = selRowIds.length; i < len; i++) {
+					if (rowId === selRowIds[i]) {
+						configContextMenu4MultiSelect(selRowIds);
+						return true;
+					}
+				}
+			}
+			$table.mytable('selectRow', $table.mytable('getRow', rowId));
+			configContextMenu(rowId);
 		});
-		$(document).click(function() {
+		$(document).on('click', function(e) {
 			if (!$('.context-menu').hasClass('hide')) {
 				$('.context-menu').addClass('hide')
 			}
 		});
+		bindHandlerToContextmenu();
+	}
+	
+	function bindHandlerToContextmenu() {
+		$('#act-rename').on('click', function(e) {
+			var rowId = $table.mytable('getSelectedRowId');
+			console.log(rowId);
+			editRow(rowId);
+		});
+	}
+	
+	function configContextMenu(rowId) {
+		console.log(rowId);
+	}
+	
+	function configContextMenu4MultiSelect(rowIds) {
+		console.log(rowIds);
 	}
 	
 	function dateEditor(colValue, colModel) {
