@@ -1,5 +1,5 @@
 /* ===================================================
- * mytable.js v0.1.2
+ * mytable.js v0.1.3
  * https://github.com/Yenchu/mytable
  * =================================================== */
 
@@ -19,17 +19,20 @@
 		
 		init: function(element, options) {
 			this.$element = $(element);
-			this.options = $.extend(true, {}, $.fn.mytable.defaults, options);
-			this.namespace = compName, this.colModels = this.options.colModels, this.remote = this.options.remote || {};
-			
-			// disable multi-select when using restful api
-			this.remote.isRest && (this.options.isMultiSelect = false);
+			this.setOptions(options);
 			
 			this.rowDataMap = {}, this.selRowIds = [], this.keyName, this.editedRowId, this.newRowId, this.optionsUrlCache = {};
 			this.page = 0, this.pageSize = 0, this.totalPages = 0, this.totalRecords = 0, this.sortCol, this.sortDir;
 			
 			this.createTable();
 			this.loadData();
+		}
+	
+		, setOptions: function(newOptions) {
+			this.options = $.extend(true, {}, $.fn.mytable.defaults, newOptions);
+			this.namespace = compName, this.colModels = this.options.colModels, this.remote = this.options.remote || {};
+			// disable multi-select when using restful api
+			this.remote.isRest && (this.options.isMultiSelect = false);
 		}
 	
 		, destroy: function() {
@@ -227,9 +230,9 @@
 			}).done(function(resps) {
 				that.parseData(resps);
 			}).fail(function() {
-				$.error('Loading data from remote failed!');
 				var e = $.Event('remoteLoadError');
 				that.$element.trigger(e);
+				$.error('Loading data from remote failed!');
 			});
 		}
 		
@@ -241,14 +244,15 @@
 			var $loadindBar = $(this.options.loadingBarTemplate);
 			$loadindBar.appendTo($placeholder);
 
-			var $progress = $loadindBar.find('.progress'), barW, barH;
-			if ($progress) {
-				barW = $progress.width() / 2 + 24, barH = $progress.height() / 2;
+			var progress = $loadindBar.find('.progress'), w = 0, h = 0;
+			if (progress.length > 0) {
+				var $progress = $(progress[0]);
+				w = $element.width() / 2 - $progress.width() / 2, h = $element.height() / 3 - $progress.height() / 2;
 			} else {
-				barW = $loadindBar.width() / 2, barH = $loadindBar.height() / 2;
+				w = $element.width() / 2, h = $element.height() / 2 - $loadindBar.height() / 2;
 			}
-			var x = $element.offset().left + ($element.width() / 2) - barW, 
-				y = $element.offset().top + ($element.height() / 2) - barH;
+
+			var x = $element.offset().left + w, y = $element.offset().top + h;
 			$loadindBar.offset({top:y, left:x});
 		}
 		
@@ -262,6 +266,10 @@
 			var options = this.options;
 			var paramNames = options.paramNames;
 			var rowDataSet = json[paramNames.records];
+			if (!rowDataSet) {
+				$.error('The json data format is incorrect!');
+				return;
+			}
 			
 			if (options.isPageable) {
 				this.totalRecords = json[paramNames.totalRecords] || rowDataSet.length;
@@ -284,7 +292,7 @@
 			var that = this, $element = this.$element, options = this.options, ns = this.namespace;
 
 			$(document).off('click.' + ns).on('click.' + ns, function(e) {
-				if (that.isFocusout(e)) {
+				if (that.isBlur(e)) {
 					that.clearSelectedRow();
 					var e = $.Event('blur');
 					that.$element.trigger(e);
@@ -458,6 +466,11 @@
 	        	return;
 	        }
 			
+	        // clear old data if existed
+	        var tbody = this.$element.find('tbody')[0];
+			var $tbody = tbody ? $(tbody).empty() : $('<tbody/>').appendTo(this.$element);
+			
+			// hide pager if no any records
 			var rowLen = rowDataSet.length;
 			if (rowLen < 1) {
 				$('.paging-bar').addClass('hide');
@@ -467,15 +480,15 @@
 				$pagingBar.hasClass('hide') && $pagingBar.removeClass('hide');
 			}
 			
-			var i, len;
+			// update pager if pageable
+			var i = 0, len = rowLen;
 			if (this.options.isPageable) {
+				this.updatePagingElements();
+				
 				i = this.page * this.pageSize;
 				len = i + this.pageSize;
 				(i < 0 || i >= rowLen) && (i = 0);
 				(len < 1 || len > rowLen) && (len = rowLen);
-			} else {
-				i = 0;
-				len = rowLen;
 			}
 			
 			var tbodyContent = '';
@@ -496,12 +509,7 @@
 				}
 				tbodyContent += '</tr>';
 			}
-			
-			var tbody = this.$element.find('tbody')[0];
-			var $tbody = tbody ? $(tbody) : $('<tbody/>').appendTo(this.$element);
 			$tbody.html(tbodyContent);
-			
-			this.options.isPageable && this.updatePagingElements();
 			
 			e = $.Event('loaded');
 			this.$element.trigger(e);
@@ -590,7 +598,7 @@
 		}
 		
 		, getColContent: function(rowData, colModel) {
-			var colVal = this.getColValue(rowData, colModel);//rowData[colModel.name];
+			var colVal = this.getColValue(rowData, colModel);
 			if (colModel.formatter) {
 				return colModel.formatter(colVal, rowData);
 			}
@@ -925,7 +933,7 @@
 			this.doRestoreRow(rowId, $row);
 		}
 		
-		, doRestoreRow: function(rowId, $row) {
+		, doRestoreRow: function(rowId, $row, $form) {
 			if (this.isAddingRow(rowId)) {
 				$row.remove();
 				return;
@@ -938,6 +946,12 @@
 				var colModel = this.colModels[i];
 				if (colModel.hidden) {
 					continue;
+				}
+				
+				// just for conserving updated values in UI when updating
+				if ($form) {
+					var newVal = $form.find('[name="' + colModel.name + '"]').val();console.log(newVal);
+					rowData[colModel.name] = newVal;
 				}
 				
 				colIdx++;
@@ -968,7 +982,7 @@
 				$form.append('<input type="hidden" name="' + this.keyName + '" value="' + rowId + '" >');
 			}
 			this.doSaveRow(rowId, $form);
-			this.doRestoreRow(rowId, $row);
+			this.doRestoreRow(rowId, $row, $form);
 		}
 		
 		, deleteRow: function(settings) {
@@ -1046,9 +1060,11 @@
 			}
 
 			var that = this;
+			var data = $form.serialize();
+			this.remote.params && (data += '&' + $.param(this.remote.params));
 			$.ajax({
 				url: url,
-				data: $form.serialize(),
+				data: data,
 				type: type
 			}).done(function(resp) {
 				e = that.isAddingRow(rowId) ? $.Event('added') : $.Event('updated');
@@ -1058,9 +1074,9 @@
 					that.loadRemoteData();
 				}
 			}).fail(function() {
-				$.error(action + ' operation failed!');
 				e = $.Event(action + 'Error');
 				that.$element.trigger(e);
+				$.error(action + ' operation failed!');
 			});
 		}
 		
@@ -1080,11 +1096,12 @@
 			var url, data, type;
 			if (isRest) {
 				url = this.addIdToUrl(this.remote.url, toDelId);
-				data = {};
+				data = this.remote.params ? $.param(this.remote.params) : {};
 				type = 'DELETE';
 			} else {
 				url = this.remote.deleteUrl;
 				data = params;
+				this.remote.params && (data += '&' + $.param(this.remote.params));
 				type = 'POST';
 			}
 			
@@ -1101,9 +1118,9 @@
 					that.loadRemoteData();
 				}
 			}).fail(function() {
-				$.error('Delete operation failed!');
 				e = $.Event('deletError');
 				that.$element.trigger(e);
+				$.error('Delete operation failed!');
 			});
 		}
 		
@@ -1167,10 +1184,13 @@
 				var elem;
 				if (colModel.editable) {
 					elem = this.getEditor(colVal, colModel, true);
+					form += elem;
 				} else {
-					elem = this.addLabel(this.getTextElement(colModel, colVal, true), colModel);
+					if (!colModel.editingHidden) {
+						elem = this.addLabel(this.getTextElement(colModel, colVal, true), colModel);
+						form += elem;
+					}
 				}
-				form += elem;
 			}
 			hiddenElems != '' && (form += hiddenElems);
 			form += '</form>';
@@ -1300,7 +1320,7 @@
 			return elems;
 		}
 		
-		, isFocusout: function(e) {
+		, isBlur: function(e) {
 			var offset = this.$element.offset();
 			var width = this.$element.width();
 			var height = this.$element.height();

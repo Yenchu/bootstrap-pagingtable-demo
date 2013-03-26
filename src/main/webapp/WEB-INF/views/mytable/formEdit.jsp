@@ -32,6 +32,7 @@
 			{name:'language', header:'Language', width:'20%', sortable:true, editable:true, editor:'select'
 				, options:{'':'', 'en':'English', 'fr':'French', 'ja':'Japanese', 'zh':'Chinese'}}
 		],
+		inlineEditing:true,
 		isMultiSelect: true,
 		isPageable: true,
 		remote: {url:'${contextPath}/members', editUrl:'${contextPath}/members/edit', deleteUrl:'${contextPath}/members/delete', isRest:true}
