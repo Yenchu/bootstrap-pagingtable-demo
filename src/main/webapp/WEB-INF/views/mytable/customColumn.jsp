@@ -23,8 +23,8 @@
 	var options = {
 		colModels: [
 			{name:'id', header:'ID', hidden:true},
-			{name:'action', header:'', width:'20%', editingHidden:true, formatter:actionColumn},
-			{name:'name', header:'Name', width:'20%', sortable:true, editable:true, editor:'text'},
+			{name:'action', header:'', width:'20%', formHidden:true, formatter:actionColumn},
+			{name:'name', header:'Name', width:'20%', sortable:true, isHiddenField:true},
 			{name:'email', header:'Email', width:'20%', editable:true, editor:'textarea'},
 			{name:'birthday', header:'Birthday', width:'20%', sortable:true, editable:true, editor:dateEditor},
 			{name:'sex', header:'Sex', width:'10%', sortable:true, editable:true, editor:'radio'

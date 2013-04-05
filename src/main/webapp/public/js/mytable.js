@@ -1,5 +1,5 @@
 /* ===================================================
- * mytable.js v0.1.3
+ * mytable.js v0.1.5
  * https://github.com/Yenchu/mytable
  * =================================================== */
 
@@ -98,13 +98,12 @@
 					continue;
 				}
 				
-				var style = '';
-				colModel.width && (style += 'width:' + colModel.width + ';');
-				colModel.sortable && (style += 'cursor:pointer;');
-				style !== '' && (style = ' style="' + style + '"');
+				var attrs = {name: colModel.name};
+				colModel.width && (attrs.width = colModel.width);
+				colModel.sortable && (attrs.style = 'cursor:pointer');
 
-				var header = colModel.header;
 				var thContent;
+				var header = colModel.header;
 				if (header) {
 					if (typeof header === 'function') {
 						thContent = header(colModel);
@@ -114,9 +113,8 @@
 				} else {
 					thContent = '';
 				}
-				var $th = $('<th' + style + '>' + thContent + '</th>');
 				
-				$th.data('name', colModel.name);
+				var $th = $('<th/>', attrs).append(thContent);
 				$tr.append($th);
 			}
 			var $thead = $('<thead class="table-header"/>').appendTo(this.$element);
@@ -125,7 +123,7 @@
 		
 		, createPager: function() {
 			var pagerElemName = this.options.pagerLocation === 'top' ? 'thead' : 'tfoot';
-			var $pager = $('<' + pagerElemName + ' class="paging-bar"/>');
+			var $pager = $('<' + pagerElemName + ' />', {class: 'paging-bar'});
 			
 			// check pager location: thead or tfoot
 			var isDropup;
@@ -247,7 +245,7 @@
 			var progress = $loadindBar.find('.progress'), w = 0, h = 0;
 			if (progress.length > 0) {
 				var $progress = $(progress[0]);
-				w = $element.width() / 2 - $progress.width() / 2, h = $element.height() / 3 - $progress.height() / 2;
+				w = $element.width() / 2 - $progress.outerWidth() / 2, h = $element.height() / 2 - $progress.outerHeight() / 2;
 			} else {
 				w = $element.width() / 2, h = $element.height() / 2 - $loadindBar.height() / 2;
 			}
@@ -311,7 +309,7 @@
 			});
 			
 			$element.off('click.th.' + ns).on('click.th.' + ns, 'th', function() {
-				var colName = $(this).data('name');
+				var colName = $(this).attr('name');
 				var colModel = that.getColModel(colName);
 				if (colModel.sortable) {
 					that.sortAndReload(colName);
@@ -334,7 +332,7 @@
 			});
 			
 			$element.off('contextmenu.tr.' + ns).on('contextmenu.tr.' + ns, 'tbody tr', function(e) {
-				$element.trigger({type:'rowContextmenu', rowId:that.getRowId($(this)), orignEvent:e});
+				$element.trigger({type:'contextmenuRow', rowId:that.getRowId($(this)), orignEvent:e});
 			});
 			
 			$element.off('mouseenter.tr.' + ns).on('mouseenter.tr.' + ns, 'tbody tr', function() {
@@ -458,6 +456,9 @@
 		}
 		
 		, load: function() {
+			// clear ant cached selected rows
+			this.clearSelectedRow();
+			
 			var rowDataSet = this.getAllRowData();
 			var e = $.Event('load');
 			e.rowDataSet = rowDataSet;
@@ -615,6 +616,9 @@
 				
 				var rtVals = [];
 				var isObj = colVal[0] instanceof Object ? true : false;
+				
+				// subName is used to specify the field in sub model you want to get
+				// if no subName, default is 'id' for options case, otherwise, it's 'name'
 				var subName = colModel['subName'] || options ? 'id' : 'name';
 				for (var i = 0, len = colVal.length; i < len; i++) {
 					var rtVal = isObj ? colVal[i][subName] : colVal[i];
@@ -894,15 +898,14 @@
 				var colModel = this.colModels[i];
 				var colVal = this.getColValue(rowData, colModel) || '';
 				
-				// keep hidden column but set it uneditable for sending it to server
 				if (colModel.hidden) {
-					hiddenElems += this.getHiddenElement(colModel, colVal);
+					colModel.isHiddenField && (hiddenElems += this.getHiddenElement(colModel, colVal));
 					continue;
 				}
 				
 				colIdx++;
 				if (!colModel.editable) {
-					hiddenElems += this.getHiddenElement(colModel, colVal);
+					colModel.isHiddenField && (hiddenElems += this.getHiddenElement(colModel, colVal));
 					continue;
 				}
 
@@ -948,9 +951,9 @@
 					continue;
 				}
 				
-				// just for conserving updated values in UI when updating
+				// just to conserve updated values before updating is complete
 				if ($form) {
-					var newVal = $form.find('[name="' + colModel.name + '"]').val();console.log(newVal);
+					var newVal = $form.find('[name="' + colModel.name + '"]').val();
 					rowData[colModel.name] = newVal;
 				}
 				
@@ -982,6 +985,8 @@
 				$form.append('<input type="hidden" name="' + this.keyName + '" value="' + rowId + '" >');
 			}
 			this.doSaveRow(rowId, $form);
+			
+			// restore with modified values for temporary display before updating resp
 			this.doRestoreRow(rowId, $row, $form);
 		}
 		
@@ -1068,13 +1073,16 @@
 				type: type
 			}).done(function(resp) {
 				e = that.isAddingRow(rowId) ? $.Event('added') : $.Event('updated');
+				e.rowId = rowId;
 				e.response = resp;
 				that.$element.trigger(e);
 				if (!e.isDefaultPrevented()) {
 					that.loadRemoteData();
 				}
-			}).fail(function() {
+			}).fail(function(resp) {
 				e = $.Event(action + 'Error');
+				e.rowId = rowId;
+				e.response = resp;
 				that.$element.trigger(e);
 				$.error(action + ' operation failed!');
 			});
@@ -1085,8 +1093,7 @@
 			
 			var e = $.Event('delete'), params = {};
 			toDelId = isRest ? rowId : rowId.join(separator || ',');
-			params[this.keyName] = toDelId;
-			e.params = params;
+			e.rowId = toDelId;
 			this.$element.trigger(e);
 			if (e.isDefaultPrevented()) {
 				this.loadRemoteData();
@@ -1112,13 +1119,16 @@
 				type: type 
 			}).done(function(resp) {
 				e = $.Event('deleted');
+				e.rowId = toDelId;
 				e.response = resp;
 				that.$element.trigger(e);
 				if (!e.isDefaultPrevented()) {
 					that.loadRemoteData();
 				}
-			}).fail(function() {
+			}).fail(function(resp) {
 				e = $.Event('deletError');
+				e.rowId = toDelId;
+				e.response = resp;
 				that.$element.trigger(e);
 				$.error('Delete operation failed!');
 			});
@@ -1176,8 +1186,8 @@
 			for (var i = 0, len = this.colModels.length; i < len; i++) {
 				var colModel = this.colModels[i];
 				var colVal = this.getColValue(rowData, colModel) || '';
-				if (colModel.hidden) {
-					hiddenElems += this.getHiddenElement(colModel, colVal);
+				if (colModel.hidden || colModel.formHidden) {
+					colModel.isHiddenField && (hiddenElems += this.getHiddenElement(colModel, colVal));
 					continue;
 				}
 				
@@ -1186,15 +1196,21 @@
 					elem = this.getEditor(colVal, colModel, true);
 					form += elem;
 				} else {
-					if (!colModel.editingHidden) {
-						elem = this.addLabel(this.getTextElement(colModel, colVal, true), colModel);
-						form += elem;
+					elem = this.addLabel('<span class="uneditable-input">' + colVal + '</span>', colModel);
+					form += elem;
+					if (colModel.isHiddenField) {
+						hiddenElems += this.getHiddenElement(colModel, colVal);
 					}
 				}
 			}
 			hiddenElems != '' && (form += hiddenElems);
 			form += '</form>';
-			return $(form);
+			
+			var $form = $(form);
+			if ($form.find('[name="' + this.keyName + '"]').length < 1) {
+				$form.append('<input type="hidden" name="' + this.keyName + '" value="' + rowData[this.keyName] + '" >');
+			}
+			return $form;
 		}
 		
 		, getEditor: function(colValue, colModel, withLabel) {
