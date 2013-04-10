@@ -28,6 +28,6 @@
 	};
 	
 	$(function() {
-		$('#member-table').mytable(options);
+		$('#member-table').pagingtable(options);
 	});
 </script>

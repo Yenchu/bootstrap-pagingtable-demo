@@ -6,33 +6,28 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping(value="/mytable")
-public class MytableController {
+@RequestMapping(value="/pagingtable")
+public class PagingTableController {
 
-	private static final Logger log = LoggerFactory.getLogger(MytableController.class);
+	private static final Logger log = LoggerFactory.getLogger(PagingTableController.class);
 	
 	@RequestMapping(value={"", "/"})
 	public String home() {
-		return "mytable/remoteLoad";
+		return "pagingtable/remoteLoad";
 	}
 	
 	@RequestMapping(value="/remoteLoad")
 	public String remoteLoad() {
-		return "mytable/remoteLoad";
+		return "pagingtable/remoteLoad";
 	}
 	
 	@RequestMapping(value="/formEdit")
 	public String formEdit() {
-		return "mytable/formEdit";
+		return "pagingtable/formEdit";
 	}
 	
 	@RequestMapping(value="/customColumn")
 	public String customColumn() {
-		return "mytable/customColumn";
-	}
-	
-	@RequestMapping(value="/advancedFunc")
-	public String advancedFunc() {
-		return "mytable/advancedFunc";
+		return "pagingtable/customColumn";
 	}
 }

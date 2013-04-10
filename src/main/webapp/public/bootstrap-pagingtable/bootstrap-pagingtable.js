@@ -1,21 +1,21 @@
 /* ===================================================
- * mytable.js v0.1.7
- * https://github.com/Yenchu/mytable
+ * bootstrap-pagingtable.js v0.1.6
+ * https://github.com/Yenchu/bootstrap-pagingtable
  * =================================================== */
 
 !function($) {
 	
 	"use strict";
 
-	var compName = 'mytable';
+	var compName = 'pagingtable';
 	
-	var MyTable = function(element, options) {
+	var PagingTable = function(element, options) {
 		this.init(element, options);
 	};
 	
-	MyTable.prototype = {
+	PagingTable.prototype = {
 		
-		constructor: MyTable,
+		constructor: PagingTable,
 		
 		init: function(element, options) {
 			this.$element = $(element);
@@ -29,7 +29,7 @@
 		}
 	
 		, setOptions: function(newOptions) {
-			this.options = $.extend(true, {}, $.fn.mytable.defaults, newOptions);
+			this.options = $.extend(true, {}, $.fn.pagingtable.defaults, newOptions);
 			this.namespace = compName, this.colModels = this.options.colModels, this.remote = this.options.remote || {};
 			// disable multi-select when using restful api
 			this.remote.isRest && (this.options.isMultiSelect = false);
@@ -1332,17 +1332,17 @@
 		}
 	};
 
-	$.fn.mytable = function(option, value) {
+	$.fn.pagingtable = function(option, value) {
 		var methodReturn = undefined;
 		var $compSet = this.each(function() {
 			var $this = $(this), data = $this.data(compName), options = typeof option === 'object' && option;
-			if (!data) $this.data(compName, (data = new MyTable(this, options)));
+			if (!data) $this.data(compName, (data = new PagingTable(this, options)));
 			if (typeof option === 'string') methodReturn = data[option](value);
 		});
 		return methodReturn === undefined ? $compSet : methodReturn;
 	};
 
-	$.fn.mytable.defaults = {
+	$.fn.pagingtable.defaults = {
 		classes: {hover: 'info', highlight: 'success', activePagingBtn:'btn-primary'},
 		pageSizeOptions: [10, 20, 50],
 		pagerLocation: 'bottom',
@@ -1372,6 +1372,6 @@
 		loadingBarTemplate: '<div class="loading-bar dropdown"><div class="dropdown-menu"><div class="progress progress-striped active"><div class="bar" style="width:100%"></div></div></div></div>'
 	};
 
-	$.fn.mytable.Constructor = MyTable;
+	$.fn.pagingtable.Constructor = PagingTable;
 	
 }(window.jQuery);

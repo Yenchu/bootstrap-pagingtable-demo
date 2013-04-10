@@ -2,9 +2,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <div id="leftnav">
 	<ul class="nav nav-tabs nav-stacked">
-		<li id="leftnav-remoteLoad"><a href="${contextPath}/mytable/remoteLoad"><i class="icon-chevron-right"></i> Remote Data</a></li>
-		<li id="leftnav-formEdit"><a href="${contextPath}/mytable/formEdit"><i class="icon-chevron-right"></i> Form Edit</a></li>
-		<li id="leftnav-customColumn"><a href="${contextPath}/mytable/customColumn"><i class="icon-chevron-right"></i> Custom Column</a></li>
+		<li id="leftnav-remoteLoad"><a href="${contextPath}/pagingtable/remoteLoad"><i class="icon-chevron-right"></i> Remote Data</a></li>
+		<li id="leftnav-formEdit"><a href="${contextPath}/pagingtable/formEdit"><i class="icon-chevron-right"></i> Form Edit</a></li>
+		<li id="leftnav-customColumn"><a href="${contextPath}/pagingtable/customColumn"><i class="icon-chevron-right"></i> Custom Column</a></li>
 	</ul>
 </div>
 <script>

@@ -47,7 +47,7 @@
 				var rowId = $(this).parents('tr').attr('id');
 				deleteRow(rowId);
 			});
-		}).mytable(options);
+		}).pagingtable(options);
 	}
 	
 	function actionColumn(colValue, rowData) {
@@ -62,17 +62,17 @@
 	}
 	
 	function addRow() {
-		$table.mytable('addRow');
+		$table.pagingtable('addRow');
 		$('.date-picker').datepicker({format:'yyyy-mm-dd'});
 	}
 	
 	function editRow(rowId) {
-		$table.mytable('updateRow', rowId);
+		$table.pagingtable('updateRow', rowId);
 		$('.date-picker').datepicker({format:'yyyy-mm-dd'});
 	}
 	
 	function deleteRow(rowId) {
-		$table.mytable('deleteRow', {id:rowId, displayColName:'name'});
+		$table.pagingtable('deleteRow', {id:rowId, displayColName:'name'});
 	}
 	
 	$(function() {

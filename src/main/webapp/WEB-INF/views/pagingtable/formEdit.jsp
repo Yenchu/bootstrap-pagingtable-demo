@@ -35,11 +35,11 @@
 		inlineEditing:true,
 		isMultiSelect: true,
 		isPageable: true,
-		remote: {url:'${contextPath}/members', editUrl:'${contextPath}/members/edit', deleteUrl:'${contextPath}/members/delete', isRest:true}
+		remote: {url:'${contextPath}/members', isRest:true}
 	};
 	
 	function createTable() {
-		$table = $('#member-table').mytable(options).on('dblclickRow', function(e) {
+		$table = $('#member-table').pagingtable(options).on('dblclickRow', function(e) {
 			var rowId = e.rowId;
 			editRow(rowId);
 		});
@@ -51,22 +51,22 @@
 	}
 	
 	function addRow() {
-		$table.mytable('addRow');
+		$table.pagingtable('addRow');
 		$('.date-picker').datepicker({format:'yyyy-mm-dd'});
 	}
 	
 	function editRow(rowId) {
-		$table.mytable('updateRow', rowId);
+		$table.pagingtable('updateRow', rowId);
 		$('.date-picker').datepicker({format:'yyyy-mm-dd'});
 	}
 	
 	function deleteRow() {
-		var rowIds = $table.mytable('getSelectedRowIds');
+		var rowIds = $table.pagingtable('getSelectedRowIds');
 		if (!rowIds || rowIds.length == 0) {
 			alert('Please select a row!');
 			return;
 		}
-		$table.mytable('deleteRow', {id:rowIds, displayColName:'name'});
+		$table.pagingtable('deleteRow', {id:rowIds, displayColName:'name'});
 	}
 	
 	$(function() {

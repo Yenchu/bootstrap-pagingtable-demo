@@ -36,29 +36,29 @@
 		</put-attribute>
 	</definition>
 
-	<definition name="mytableLayout" extends="leftNavcontentLayout">
-		<put-attribute name="leftNav" value="/WEB-INF/views/mytable/mytableLeftNav.jsp" cascade="true" />
+	<definition name="pagingtableLayout" extends="leftNavcontentLayout">
+		<put-attribute name="leftNav" value="/WEB-INF/views/pagingtable/pagingtableLeftNav.jsp" cascade="true" />
 		<put-list-attribute name="csses">
-			<add-attribute value="/WEB-INF/views/mytable/mytableCss.jsp" />
+			<add-attribute value="/WEB-INF/views/pagingtable/pagingtableCss.jsp" />
 		</put-list-attribute>
 		<put-list-attribute name="jses">
-			<add-attribute value="/WEB-INF/views/mytable/mytableJs.jsp" />
+			<add-attribute value="/WEB-INF/views/pagingtable/pagingtableJs.jsp" />
 		</put-list-attribute>
 	</definition>
 
-	<definition name="mytable/remoteLoad" extends="mytableLayout">
-		<put-attribute name="content" value="/WEB-INF/views/mytable/remoteLoad.jsp" cascade="true" />
+	<definition name="pagingtable/remoteLoad" extends="pagingtableLayout">
+		<put-attribute name="content" value="/WEB-INF/views/pagingtable/remoteLoad.jsp" cascade="true" />
 	</definition>
 	
-	<definition name="mytable/formEdit" extends="mytableLayout">
-		<put-attribute name="content" value="/WEB-INF/views/mytable/formEdit.jsp" cascade="true" />
+	<definition name="pagingtable/formEdit" extends="pagingtableLayout">
+		<put-attribute name="content" value="/WEB-INF/views/pagingtable/formEdit.jsp" cascade="true" />
 	</definition>
 	
-	<definition name="mytable/customColumn" extends="mytableLayout">
-		<put-attribute name="content" value="/WEB-INF/views/mytable/customColumn.jsp" cascade="true" />
+	<definition name="pagingtable/customColumn" extends="pagingtableLayout">
+		<put-attribute name="content" value="/WEB-INF/views/pagingtable/customColumn.jsp" cascade="true" />
 	</definition>
 	
-	<definition name="mytable/advancedFunc" extends="mytableLayout">
-		<put-attribute name="content" value="/WEB-INF/views/mytable/advancedFunc.jsp" cascade="true" />
+	<definition name="pagingtable/advancedFunc" extends="pagingtableLayout">
+		<put-attribute name="content" value="/WEB-INF/views/pagingtable/advancedFunc.jsp" cascade="true" />
 	</definition>
 </tiles-definitions>

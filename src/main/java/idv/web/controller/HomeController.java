@@ -12,7 +12,7 @@ public class HomeController {
 
 	private static final Logger log = LoggerFactory.getLogger(HomeController.class);
 	
-	@RequestMapping(value="/")
+	@RequestMapping(value={"", "/"})
 	public String index() {
 		return "home";
 	}

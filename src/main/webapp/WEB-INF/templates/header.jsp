@@ -11,7 +11,7 @@
 			<a class="brand" href="#">Samples</a>
 			<div class="nav-collapse collapse">
 				<ul class="nav">
-					<li id="topnav-mytable"><a href="${contextPath}/mytable">MyTable</a></li>
+					<li id="topnav-pagingtable"><a href="${contextPath}/pagingtable">Paging Table</a></li>
 				</ul>
 			</div>
 		</div>
@@ -21,8 +21,8 @@
 function highlightTopNav() {
 	$('#topnav').find('.nav li').removeClass('active');
 	var path = window.location.href;
-	if (path.indexOf('/mytable') >= 0) {
-		$('#topnav-mytable').addClass('active');
+	if (path.indexOf('/pagingtable') >= 0) {
+		$('#topnav-pagingtable').addClass('active');
 	}
 }
 $(function() {
