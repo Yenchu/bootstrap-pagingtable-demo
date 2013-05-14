@@ -43,6 +43,7 @@ public class MemberController {
 		WebUtil.logParameters(request);
 		/*try {
 			Thread.sleep(2000);
+			log.debug("leave sleep before get...");
 		} catch (InterruptedException e) {
 			log.error(e.getMessage(), e);
 		}*/
@@ -92,6 +93,12 @@ public class MemberController {
 	@ResponseStatus(HttpStatus.OK)
 	public void update(@PathVariable String id, @ModelAttribute("member") Member member, HttpServletRequest request) {
 		log.debug("{} put member {}.", WebUtil.getUserAddress(request), id);
+		/*try {
+			Thread.sleep(5000);
+			log.debug("leave sleep before update...");
+		} catch (InterruptedException e) {
+			log.error(e.getMessage(), e);
+		}*/
 		WebUtil.logParameters(request);
 		member.setId(id);
 		save(getMembers(request), member);

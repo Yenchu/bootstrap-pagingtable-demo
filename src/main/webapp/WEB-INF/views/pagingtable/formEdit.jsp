@@ -32,8 +32,7 @@
 			{name:'language', header:'Language', width:'20%', sortable:true, editable:true, editor:'select'
 				, options:{'':'', 'en':'English', 'fr':'French', 'ja':'Japanese', 'zh':'Chinese'}}
 		],
-		inlineEditing:true,
-		isMultiSelect: true,
+		inlineEditing: true,
 		isPageable: true,
 		remote: {url:'${contextPath}/members', isRest:true}
 	};
@@ -61,12 +60,12 @@
 	}
 	
 	function deleteRow() {
-		var rowIds = $table.pagingtable('getSelectedRowIds');
-		if (!rowIds || rowIds.length == 0) {
+		var rowId = $table.pagingtable('getSelectedRowId');
+		if (!rowId) {
 			alert('Please select a row!');
 			return;
 		}
-		$table.pagingtable('deleteRow', {id:rowIds, displayColName:'name'});
+		$table.pagingtable('deleteRow', {id:rowId, displayColName:'name'});
 	}
 	
 	$(function() {

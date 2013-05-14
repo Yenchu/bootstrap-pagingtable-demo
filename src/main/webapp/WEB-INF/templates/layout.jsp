@@ -11,6 +11,7 @@
 <meta name="author" content="">
 <title>Samples</title>
 <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+<link href="${asset}/font-awesome/css/font-awesome.min.css" rel="stylesheet">
 <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 <style>
 /* Sticky footer styles */

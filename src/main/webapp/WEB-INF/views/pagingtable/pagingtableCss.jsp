@@ -6,7 +6,7 @@
 .datepicker {
   z-index: 9999;
 }
-.paging-bar {
+.table-pager {
   background-color: #f5f5f5;
 }
 .icon-chevron-right {

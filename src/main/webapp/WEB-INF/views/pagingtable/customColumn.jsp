@@ -36,7 +36,7 @@
 		loadOnce: true,
 		remote: {url:'${contextPath}/members', editUrl:'${contextPath}/members/edit', deleteUrl:'${contextPath}/members/delete'}
 	};
-	
+
 	function createTable() {
 		$table = $('#member-table').on('created', function() {
 			$(this).on('click', '.edit-row', function() {
