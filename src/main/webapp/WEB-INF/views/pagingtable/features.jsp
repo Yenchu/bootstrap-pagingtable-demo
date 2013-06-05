@@ -24,18 +24,21 @@
 	var options = {
 		colModels: [
 			{name:'id', header:'ID', hidden:true},
-			{name:'name', header:'Name', width:'20%', sortable:true, editable:true, editor:'text'},
-			{name:'email', header:'Email', width:'20%', editable:true, editor:'textarea'},
+			{name:'name', header:'Name', width:'20%', sortable:true, isHiddenField:true},
+			{name:'email', header:'Email', width:'30%', editable:true, editor:'textarea'},
 			{name:'birthday', header:'Birthday', width:'20%', sortable:true, editable:true, editor:dateEditor},
-			{name:'sex', header:'Sex', width:'20%', sortable:true, editable:true, editor:'radio'
+			{name:'sex', header:'Sex', width:'10%', sortable:true, editable:true, editor:'radio'
 				, options:{'1':'Female', '2':'Male'}},
 			{name:'language', header:'Language', width:'20%', sortable:true, editable:true, editor:'select'
-				, options:{'':'', 'en':'English', 'fr':'French', 'ja':'Japanese', 'zh':'Chinese'}}
+				, optionsUrl:'${contextPath}/language/options'}
 		],
+		inlineEditing: true,
+		isMultiSelect: true,
 		isPageable: true,
-		remote: {url:'${contextPath}/members', isRest:true}
+		loadOnce: true,
+		remote: {url:'${contextPath}/members', editUrl:'${contextPath}/members/edit', deleteUrl:'${contextPath}/members/delete'}
 	};
-	
+
 	function createTable() {
 		$table = $('#member-table').pagingtable(options).on('dblclickRow', function(e) {
 			var rowId = e.rowId;
@@ -58,20 +61,20 @@
 		$('.date-picker').datepicker({format:'yyyy-mm-dd'});
 	}
 	
-	function deleteRow() {
-		var rowId = $table.pagingtable('getSelectedRowId');
-		if (!rowId) {
+	function deleteRows() {
+		var rowIds = $table.pagingtable('getSelectedRowIds');
+		if (!rowIds) {
 			alert('Please select a row!');
 			return;
 		}
-		$table.pagingtable('deleteRow', {id:rowId, displayColName:'name'});
+		$table.pagingtable('deleteRow', {id:rowIds, displayColName:'name'});
 	}
 	
 	$(function() {
 		document.onselectstart = function() {
 			return false;
 		}
-		
+
 		createTable();
 		
 		$('#add-btn').click(function() {
@@ -79,7 +82,7 @@
 		});
 		
 		$('#delete-btn').click(function() {
-			deleteRow();
+			deleteRows();
 		});
 	});
 </script>

@@ -3,13 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
-<link href="../css/mytable.css" rel="stylesheet">
+<link href="../bootstrap-pagingtable/bootstrap-pagingtable.css" rel="stylesheet">
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js"></script>
-<script src="../js/mytable.js"></script>
+<script src="../bootstrap-pagingtable/bootstrap-pagingtable.js"></script>
 </head>
 <body>
 <div class="container">
+	<div class="row">
+	<div class="btn-group pull-right">
+				<button type="button" id="add-btn" class="btn btn-info"><i class="icon-plus icon-white"></i> Add</button>
+				<button type="button" id="delete-btn" class="btn btn-danger"><i class="icon-trash icon-white"></i> Delete</button>
+			</div>
+	</div>
 	<div class="row">
 		<div class="span12">
 			<div>
@@ -19,22 +25,53 @@
 	</div>
 </div>
 <script type="text/javascript">
+	var $table;
+	
 	var options = {
 		colModels: [
 			{name:'name', header:'Name', key:true, sortable:true},
 			{name:'price', header:'Price', sortable:true},
-			{name:'quantity', header:'Quantity', sortable:true}
+			{name:'quantity', header:'Quantity', sortable:true, editable:true}
 		],
 		localData: {'records':[{'name':'orange', 'price':1.2, 'quantity':10}
 			, {'name':'apple', 'price':2.0, 'quantity':8}
 			, {'name':'banana', 'price':0.8, 'quantity':15}
 			, {'name':'grape', 'price':0.4, 'quantity':30}
 			, {'name':'strawberry', 'price':0.5, 'quantity':24}]},
+		isMultiSelect: true,
 		isPageable: true
 	};
+	
+	function addRow() {
+		$table.pagingtable('addRow');
+	}
+	
+	function editRow(rowId) {
+		$table.pagingtable('updateRow', rowId);
+	}
+	
+	function deleteRow() {
+		var rowId = $table.pagingtable('getSelectedRowIds');
+		if (!rowId) {
+			alert('Please select a row!');
+			return;
+		}
+		$table.pagingtable('deleteRow', {name:rowId, displayColName:'name'});
+	}
 
 	$(function() {
-		$('#sample-table').mytable(options);
+		$table = $('#sample-table').pagingtable(options).on('dblclickRow', function(e) {
+			var rowId = e.rowId;
+			editRow(rowId);
+		});
+		
+		$('#add-btn').click(function() {
+			addRow({name:'XXX'});
+		});
+		
+		$('#delete-btn').click(function() {
+			deleteRow();
+		});
 	});
 </script>
 </body>

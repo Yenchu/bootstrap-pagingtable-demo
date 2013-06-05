@@ -58,7 +58,7 @@
 		<put-attribute name="content" value="/WEB-INF/views/pagingtable/customColumn.jsp" cascade="true" />
 	</definition>
 	
-	<definition name="pagingtable/advancedFunc" extends="pagingtableLayout">
-		<put-attribute name="content" value="/WEB-INF/views/pagingtable/advancedFunc.jsp" cascade="true" />
+	<definition name="pagingtable/features" extends="pagingtableLayout">
+		<put-attribute name="content" value="/WEB-INF/views/pagingtable/features.jsp" cascade="true" />
 	</definition>
 </tiles-definitions>

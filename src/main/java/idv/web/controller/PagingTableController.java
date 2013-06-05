@@ -30,4 +30,9 @@ public class PagingTableController {
 	public String customColumn() {
 		return "pagingtable/customColumn";
 	}
+	
+	@RequestMapping(value="/features")
+	public String features() {
+		return "pagingtable/features";
+	}
 }

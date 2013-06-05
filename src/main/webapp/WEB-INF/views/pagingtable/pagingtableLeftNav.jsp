@@ -5,6 +5,7 @@
 		<li id="leftnav-remoteLoad"><a href="${contextPath}/pagingtable/remoteLoad"><i class="icon-chevron-right"></i> Remote Data</a></li>
 		<li id="leftnav-formEdit"><a href="${contextPath}/pagingtable/formEdit"><i class="icon-chevron-right"></i> Form Edit</a></li>
 		<li id="leftnav-customColumn"><a href="${contextPath}/pagingtable/customColumn"><i class="icon-chevron-right"></i> Custom Column</a></li>
+		<li id="leftnav-features"><a href="${contextPath}/pagingtable/features"><i class="icon-chevron-right"></i> Other Features</a></li>
 	</ul>
 </div>
 <script>
@@ -17,6 +18,8 @@ function highlightLeftNav() {
 		$('#leftnav-formEdit').addClass('active');
 	} else if (path.indexOf('/customColumn') >= 0) {
 		$('#leftnav-customColumn').addClass('active');
+	} else if (path.indexOf('/features') >= 0) {
+		$('#leftnav-features').addClass('active');
 	} else {
 		$('#leftnav-remoteLoad').addClass('active');
 	}
