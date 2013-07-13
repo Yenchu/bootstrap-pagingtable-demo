@@ -10,3 +10,8 @@
 /.project
 /.settings
 /updateLog.txt
+target
+.settings/*
+!.settings/.jsdtscope
+.project
+.classpath
