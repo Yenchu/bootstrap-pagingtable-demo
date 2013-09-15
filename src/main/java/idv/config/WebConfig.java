@@ -24,6 +24,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.mvc.method.annotation.ServletWebArgumentResolverAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
@@ -41,9 +42,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 	
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-		PageableArgumentResolver resolver = new PageableArgumentResolver();
+		/*PageableArgumentResolver resolver = new PageableArgumentResolver();
 		resolver.setFallbackPagable(new PageRequest(1, 10));
-		//argumentResolvers.add(new ServletWebArgumentResolverAdapter(resolver));
+		argumentResolvers.add(new ServletWebArgumentResolverAdapter(resolver));*/
 		argumentResolvers.add(new PageableHandlerMethodArgumentResolver());
 	}
 	
@@ -57,7 +58,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 		registry.addResourceHandler("/public/**").addResourceLocations("/public/");
 	}
 	
-	@Override
+	/*@Override
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.setSerializationInclusion(Include.NON_NULL);
@@ -67,7 +68,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 		converters.add(converter);
 		
 		super.configureMessageConverters(converters);
-	}
+	}*/
 
 	@Bean
 	public TilesConfigurer tilesConfigurer() {
@@ -110,7 +111,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 			if (pageStr == null || pageStr.equals("")) {
 				return null;
 			}
-			String pageSizeStr = webRequest.getParameter("pageSize");
 			
 			int page = 0;
 			try {
@@ -120,6 +120,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 			}
 			
 			int pageSize = 10;
+			String pageSizeStr = webRequest.getParameter("pageSize");
 			if (pageSizeStr != null && !pageSizeStr.equals("")) {
 				try {
 					pageSize = Integer.parseInt(pageSizeStr);
@@ -127,11 +128,10 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 					log.warn(e.getMessage(), e);
 				}
 			}
-			
 			pageSize = (pageSize > 0 ? pageSize : 10);
-			String sortCol = webRequest.getParameter("sort");
 			
 			Pageable pageable = null;
+			String sortCol = webRequest.getParameter("sort");
 			if (sortCol != null && !sortCol.equals("")) {
 				String sortColDir = webRequest.getParameter("sortDir");
 				Sort.Direction sortDir = (sortColDir != null && !sortColDir.equals("") ? Sort.Direction.fromString(sortColDir) : Sort.Direction.ASC);

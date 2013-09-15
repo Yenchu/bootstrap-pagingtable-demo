@@ -1,8 +1,8 @@
 package idv.web.controller;
 
-import idv.constant.Gender;
 import idv.model.Member;
 import idv.to.Page;
+import idv.type.Gender;
 import idv.util.WebUtil;
 
 import java.util.ArrayList;
@@ -41,12 +41,6 @@ public class MemberController {
 	public Page<Member> get(@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, HttpServletRequest request) {
 		log.debug("{} get members.", WebUtil.getUserAddress(request));
 		WebUtil.logParameters(request);
-		/*try {
-			Thread.sleep(2000);
-			log.debug("leave sleep before get...");
-		} catch (InterruptedException e) {
-			log.error(e.getMessage(), e);
-		}*/
 		List<Member> members = getMembers(request);
 		if (pageable != null) {
 			return page(members, pageable);
@@ -93,12 +87,6 @@ public class MemberController {
 	@ResponseStatus(HttpStatus.OK)
 	public void update(@PathVariable String id, @ModelAttribute("member") Member member, HttpServletRequest request) {
 		log.debug("{} put member {}.", WebUtil.getUserAddress(request), id);
-		/*try {
-			Thread.sleep(5000);
-			log.debug("leave sleep before update...");
-		} catch (InterruptedException e) {
-			log.error(e.getMessage(), e);
-		}*/
 		WebUtil.logParameters(request);
 		member.setId(id);
 		save(getMembers(request), member);

@@ -22,11 +22,6 @@ public class HomeController {
 		return "home";
 	}
 	
-	@RequestMapping(value = "/home")
-	public String home(HttpServletRequest request) {
-		return "home";
-	}
-	
 	@RequestMapping(value="/language/options")
 	@ResponseBody
 	public Map<String, String> getRoleOptions(HttpServletRequest request) {

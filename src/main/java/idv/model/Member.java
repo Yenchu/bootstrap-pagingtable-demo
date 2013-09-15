@@ -1,6 +1,6 @@
 package idv.model;
 
-import idv.util.DateJsonSerializer;
+import idv.model.util.DateJsonSerializer;
 
 import java.io.Serializable;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package idv.util;
+package idv.model.util;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;

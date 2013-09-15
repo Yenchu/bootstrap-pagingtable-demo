@@ -1,4 +1,4 @@
-package idv.constant;
+package idv.type;
 
 public enum Gender {
 
