@@ -10,41 +10,20 @@
 <meta name="description" content="">
 <meta name="author" content="">
 <title>Samples</title>
-<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
-<link href="${asset}/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-<!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-<style>
-/* Sticky footer styles */
-html, body {
-  height: 100%;
-}
-#wrap {
-  min-height: 100%;
-  height: auto !important;
-  height: 100%;
-  margin: 0 auto -40px;
-}
-#push, #footer {
-  height: 40px;
-}
-#footer {
-  background-color: #f5f5f5;
-}
-@media (max-width: 767px) {
-  #footer {
-    margin-left: -20px;
-    margin-right: -20px;
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-}
-</style>
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css"><!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<link rel="stylesheet" href="${asset}/css/main.css">
 <tilesx:useAttribute id="csses" name="csses" classname="java.util.List" ignore="true" />
 <c:forEach var="css" items="${csses}">
 <tiles:insertAttribute value="${css}" flush="true" />
 </c:forEach>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js"></script>
+<!--[if lt IE 9]>
+	<script src="${asset}/js/html5shiv.js"></script>
+	<script src="${asset}/js/respond.min.js"></script>
+<![endif]-->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script src="${asset}/js/main.js"></script>
 <tilesx:useAttribute id="jses" name="jses" classname="java.util.List" ignore="true" />
 <c:forEach var="js" items="${jses}">
 <tiles:insertAttribute value="${js}" flush="true" />

@@ -1,12 +1,12 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <div id="leftnav">
-	<ul class="nav nav-tabs nav-stacked">
-		<li id="leftnav-remoteLoad"><a href="${contextPath}/pagingtable/remoteLoad"><i class="icon-chevron-right"></i> Remote Data</a></li>
-		<li id="leftnav-formEdit"><a href="${contextPath}/pagingtable/formEdit"><i class="icon-chevron-right"></i> Form Edit</a></li>
-		<li id="leftnav-customColumn"><a href="${contextPath}/pagingtable/customColumn"><i class="icon-chevron-right"></i> Custom Column</a></li>
-		<li id="leftnav-features"><a href="${contextPath}/pagingtable/features"><i class="icon-chevron-right"></i> Other Features</a></li>
-	</ul>
+	<div class="list-group">
+		<a id="leftnav-remoteLoad" class="list-group-item" href="${contextPath}/pagingtable/remoteLoad"><span class="glyphicon glyphicon-chevron-right"></span> Simple Example</a>
+		<a id="leftnav-formEdit" class="list-group-item" href="${contextPath}/pagingtable/formEdit"><span class="glyphicon glyphicon-chevron-right"></span> Form Edit</a>
+		<a id="leftnav-customColumn" class="list-group-item" href="${contextPath}/pagingtable/customColumn"><span class="glyphicon glyphicon-chevron-right"></span> Custom Column</a>
+		<a id="leftnav-features" class="list-group-item" href="${contextPath}/pagingtable/features"><span class="glyphicon glyphicon-chevron-right"></span> Other Features</a>
+	</div>
 </div>
 <script>
 function highlightLeftNav() {

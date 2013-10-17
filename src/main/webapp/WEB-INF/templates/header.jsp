@@ -1,19 +1,21 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<div id="topnav" class="navbar navbar-inverse navbar-static-top">
-	<div class="navbar-inner">
-		<div class="container-fluid">
-			<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+<div id="topnav" class="navbar navbar-inverse navbar-static-top" role="navigation">
+	<div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
-			</a>
-			<a class="brand" href="#">Samples</a>
-			<div class="nav-collapse collapse">
-				<ul class="nav">
-					<li id="topnav-pagingtable"><a href="${contextPath}/pagingtable">Paging Table</a></li>
-				</ul>
-			</div>
+			</button>
+			<a class="navbar-brand" href="#">Samples</a>
+		</div>
+		<div class="collapse navbar-collapse">
+			<ul class="nav navbar-nav">
+				<li class="active"><a href="${contextPath}">Home</a></li>
+				<li id="topnav-pagingtable"><a href="${contextPath}/pagingtable">Pagingtable</a></li>
+				<li id="topnav-pagingtable"><a href="${contextPath}/public/html/d3.html">D3</a></li>
+			</ul>
 		</div>
 	</div>
 </div>
