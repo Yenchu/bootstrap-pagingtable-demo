@@ -21,7 +21,7 @@
 			{name:'birthday', header:'Birthday', width:'20%', sortable:true, editable:true, editor:dateEditor},
 			{name:'sex', header:'Sex', width:'10%', sortable:true, editable:true, editor:'radio'
 				, options:{'1':'Female', '2':'Male'}},
-			{name:'language', header:'Language', width:'20%', sortable:true, editable:true, editor:'select'
+			{name:'languages', header:'Languages', width:'20%', editable:true, editor:'multiselect'
 				, optionsUrl:'${contextPath}/language/options'}
 		],
 		inlineEditing: true,

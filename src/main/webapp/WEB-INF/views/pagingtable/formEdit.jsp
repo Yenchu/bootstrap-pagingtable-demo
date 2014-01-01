@@ -21,8 +21,8 @@
 			{name:'birthday', header:'Birthday', width:'20%', sortable:true, editable:true, editor:dateEditor},
 			{name:'sex', header:'Sex', width:'20%', sortable:true, editable:true, editor:'radio'
 				, options:{'1':'Female', '2':'Male'}},
-			{name:'language', header:'Language', width:'20%', sortable:true, editable:true, editor:'select'
-				, options:{'':'', 'en':'English', 'fr':'French', 'ja':'Japanese', 'zh':'Chinese'}}
+			{name:'languages', header:'Languages', width:'20%', editable:true, editor:'checkbox'
+				, options:{'en':'English', 'fr':'French', 'ja':'Japanese', 'zh':'Chinese'}}
 		],
 		isPageable: true,
 		remote: {url:'${contextPath}/members', isRest:true}

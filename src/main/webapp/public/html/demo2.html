@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+<link href="../bootstrap-pagingtable/bootstrap-v2-pagingtable.css" rel="stylesheet">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js"></script>
+<script src="../bootstrap-pagingtable/bootstrap-v2-pagingtable.js"></script>
+<script src="https://www.google.com/jsapi"></script>
+</head>
+<body>
+<div class="container">
+	<div class="row">
+		<div class="span12">
+			<div><h3>News Feed</h3></div>
+			<div>
+				<table id="feed-table" class="table table-striped table-bordered"></table>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	var options = {
+		//classes: {hover:'info', highlight:'success', activePagingBtn:'btn-primary'}
+		colModels: [
+		    // {name, header, key, hidden, width, formatter, sortable, sorter, editable, editor, valueOptions}
+			{name:'title', header:'Title', key:true, width:'30%', sortable:true, editable:true, editor:'text'},
+			{name:'contentSnippet', header:'Content Snippet', width:'50%', editable:true, editor:'textarea'},
+			{name:'publishedDate', header:'Published Date', width:'20%', sortable:true, sorter:sortDate, editable:true, editor:'text'}
+		],
+		//editingModalTemplate
+		//gotoPageTemplate
+		//inlineEditing: true,
+		isMultiSelect: true,
+		isPageable: true,
+		//loadingBarTemplate
+		//loadOnce: true,
+		//localData: {},
+		//pageRangeTemplate" '',
+		//pageSizeOptions: [10, 20, 50],
+		//pagerLocation: 'top',
+		//pagingTemplate: '',
+		paramNames: {records:'entries'} //{page:'page', pageSize:'pageSize', records:'records', totalRecords:'totalRecords', sort:'sort', sortDir:'sortDir'},
+		//remote: {url, params, method, editUrl, deleteUrl},
+		//sortDir: {asc:'asc', desc:'desc'},
+		//texts: {addRowTitle:'Add Record', updateRowTitle:'Update Record', deleteRowTitle:'Delete Record', deleteRowSubject:'<span class="text-warning"><h4>Are you sure to delete the following record(s)?</h4></span>', submitButton:'Submit', cancelButton:'Cancel'},
+	};
+	
+	function createTable() {
+		var $feedTable = $('#feed-table');
+		$feedTable.pagingtable(options);
+	}
+	
+	function sortDate(a, b) {
+		var valA = a['publishedDate'], valB = b['publishedDate'];
+		if (!valA || valA == '') {
+			return -1;
+		}
+		if (!valB || valB == '') {
+			return 1;
+		}
+		var dateA = new Date(valA), dateB = new Date(valB);
+		if (dateA < dateB) {
+			return -1;
+		}
+		if (dateA > dateB) {
+			return 1;
+		}
+		return 0;
+	}
+	
+	function feedLoaded(result) {
+		if (result.error) {
+			console.log('Load feed error: ' + result.error);
+			return;
+		}
+		
+		options.localData = result.feed;
+		createTable();
+	}
+	
+	function loadFeeds() {
+		var feed = new google.feeds.Feed('http://www.digg.com/rss/index.xml');
+		feed.includeHistoricalEntries();
+		feed.setNumEntries(250);
+		feed.load(feedLoaded);
+	}
+	
+	google.load('feeds', '1');
+	google.setOnLoadCallback(loadFeeds);
+	
+	$(function() {
+		document.onselectstart = function() {
+			return false;
+		}
+	});
+</script>
+</body>
+</html>

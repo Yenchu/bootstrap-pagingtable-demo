@@ -13,7 +13,7 @@
 			{name:'birthday', header:'Birthday', width:'20%', sortable:true},
 			{name:'sex', header:'Sex', width:'20%', sortable:true
 				, options:{'1':'Female', '2':'Male'}},
-			{name:'language', header:'Language', width:'20%', sortable:true
+			{name:'languages', header:'Languages', width:'20%'
 				, options:{'':'', 'en':'English', 'fr':'French', 'ja':'Japanese', 'zh':'Chinese'}}
 		],
 		isPageable: true,

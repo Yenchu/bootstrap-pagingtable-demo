@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
-<link href="../bootstrap-pagingtable/bootstrap-pagingtable.css" rel="stylesheet">
+<link href="../bootstrap-pagingtable/bootstrap-v2-pagingtable.css" rel="stylesheet">
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js"></script>
-<script src="../bootstrap-pagingtable/bootstrap-pagingtable.js"></script>
+<script src="../bootstrap-pagingtable/bootstrap-v2-pagingtable.js"></script>
 </head>
 <body>
+<p/>
 <div class="container">
 	<div class="row">
 	<div class="btn-group pull-right">
@@ -31,13 +32,16 @@
 		colModels: [
 			{name:'name', header:'Name', key:true, sortable:true},
 			{name:'price', header:'Price', sortable:true},
-			{name:'quantity', header:'Quantity', sortable:true, editable:true}
+			{name:'quantity', header:'Quantity', sortable:true, editable:true},
+			{name:'location', header:'Locations', editable:true, editor:'checkbox', 
+				options:{'us':'US', 'fr':'Frence', 'ja':'Japan', 'zh':'Taiwan'}}
 		],
-		localData: {'records':[{'name':'orange', 'price':1.2, 'quantity':10}
-			, {'name':'apple', 'price':2.0, 'quantity':8}
-			, {'name':'banana', 'price':0.8, 'quantity':15}
-			, {'name':'grape', 'price':0.4, 'quantity':30}
-			, {'name':'strawberry', 'price':0.5, 'quantity':24}]},
+		localData: {'records':[{'name':'orange', 'price':1.2, 'quantity':10, 'location':['ja', 'zh']}
+			, {'name':'apple', 'price':2.0, 'quantity':8, 'location':['us']}
+			, {'name':'banana', 'price':0.8, 'quantity':15, 'location':['us', 'zh']}
+			, {'name':'grape', 'price':0.4, 'quantity':30, 'location':['us', 'fr']}
+			, {'name':'strawberry', 'price':0.5, 'quantity':24, 'location':['us', 'zh']}
+		]},
 		isMultiSelect: true,
 		isPageable: true
 	};
@@ -66,7 +70,7 @@
 		});
 		
 		$('#add-btn').click(function() {
-			addRow({name:'XXX'});
+			addRow();
 		});
 		
 		$('#delete-btn').click(function() {

@@ -217,20 +217,6 @@ public class MemberController {
 					Gender g2 = Gender.get(o2.getSex());
 					return g1.compareTo(g2) * isDesc;
 				}
-				if ("language".equals(prop)) {
-					String c1 = o1.getLanguage();
-					String c2 = o2.getLanguage();
-					if (c1 == null) {
-						return -1 * isDesc;
-					}
-					if (c2 == null) {
-						return -1 * isDesc;
-					}
-					Locale l1 = new Locale(c1);
-					Locale l2 = new Locale(c2);
-					// use Locale.US to display English not Chinese(default local)
-					return l1.getDisplayLanguage(Locale.US).compareTo(l2.getDisplayLanguage(Locale.US)) * isDesc;
-				}
 				return o1.getName().compareTo(o2.getName()) * isDesc;
 			}
 		});
@@ -238,7 +224,7 @@ public class MemberController {
 	
 	protected List<Member> createMembers() {
 		List<Member> members = new ArrayList<Member>();
-		Member member = new Member("David", "david@samples.com", Gender.Male.value(), Locale.FRANCE.getLanguage());
+		Member member = new Member("David", "david@samples.com", Gender.Male.value(), Locale.FRANCE.getLanguage(), Locale.US.getLanguage());
 		member.setId(UUID.randomUUID().toString());
 		members.add(member);
 		member = new Member("Alice", "alice@samples.com", Gender.Female.value(), Locale.US.getLanguage());
@@ -256,7 +242,7 @@ public class MemberController {
 		member = new Member("Bob", "bob@samples.com", Gender.Male.value(), Locale.US.getLanguage());
 		member.setId(UUID.randomUUID().toString());
 		members.add(member);
-		member = new Member("Jane", "jane@samples.com", Gender.Female.value(), Locale.CHINESE.getLanguage());
+		member = new Member("Jane", "jane@samples.com", Gender.Female.value(), Locale.CHINESE.getLanguage(), Locale.US.getLanguage());
 		member.setId(UUID.randomUUID().toString());
 		members.add(member);
 		member = new Member("Jack", "jack@samples.com", Gender.Male.value(), Locale.US.getLanguage());
@@ -268,7 +254,7 @@ public class MemberController {
 		member = new Member("Claire", "claire@samples.com", Gender.Female.value(), Locale.FRANCE.getLanguage());
 		member.setId(UUID.randomUUID().toString());
 		members.add(member);
-		member = new Member("Amy", "amy@samples.com", Gender.Female.value(), Locale.JAPAN.getLanguage());
+		member = new Member("Amy", "amy@samples.com", Gender.Female.value(), Locale.CHINESE.getLanguage(), Locale.JAPAN.getLanguage(), Locale.US.getLanguage());
 		member.setId(UUID.randomUUID().toString());
 		members.add(member);
 		member = new Member("Lisa", "lisa@samples.com", Gender.Female.value(), Locale.US.getLanguage());

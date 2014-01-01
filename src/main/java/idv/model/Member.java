@@ -4,6 +4,8 @@ import idv.model.util.DateJsonSerializer;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
@@ -35,16 +37,20 @@ public class Member implements Serializable {
 		ko	Korean
 		zh	Chinese
 	 */
-	private String language;
+	private Set<String> languages = new TreeSet<String>();
 
 	public Member() {
 	}
 	
-	public Member(String name, String email, int sex, String language) {
+	public Member(String name, String email, int sex, String... languages) {
 		this.name = name;
 		this.email = email;
 		this.sex = sex;
-		this.language = language;
+		if (languages.length > 0) {
+			for (String lang: languages) {
+				this.languages.add(lang);
+			}
+		}
 	}
 
 	public String getId() {
@@ -87,11 +93,15 @@ public class Member implements Serializable {
 		this.sex = sex;
 	}
 	
-	public String getLanguage() {
-		return language;
+	public Set<String> getLanguages() {
+		return languages;
 	}
 
-	public void setLanguage(String language) {
-		this.language = language;
+	public void setLanguages(Set<String> languages) {
+		this.languages = languages;
+	}
+	
+	public void addLanguage(String language) {
+		languages.add(language);
 	}
 }
