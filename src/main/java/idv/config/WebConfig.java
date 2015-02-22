@@ -13,7 +13,6 @@ import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableArgumentResolver;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -99,12 +98,12 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 	
 	private static class PageableHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
-		@Override
+		//@Override
 		public boolean supportsParameter(MethodParameter parameter) {
 			return Pageable.class.isAssignableFrom(parameter.getParameterType());
 		}
 
-		@Override
+		//@Override
 		public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest webRequest,
 				WebDataBinderFactory binderFactory) throws Exception {
 			String pageStr = webRequest.getParameter("page");

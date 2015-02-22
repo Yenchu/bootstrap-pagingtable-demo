@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefaults;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -38,7 +38,7 @@ public class MemberController {
 	
 	@RequestMapping(value="/members", method = RequestMethod.GET)
 	@ResponseBody
-	public Page<Member> get(@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, HttpServletRequest request) {
+	public Page<Member> get(@PageableDefault(page = 0, value = 10) Pageable pageable, HttpServletRequest request) {
 		log.debug("{} get members.", WebUtil.getUserAddress(request));
 		WebUtil.logParameters(request);
 		List<Member> members = getMembers(request);
@@ -198,7 +198,6 @@ public class MemberController {
 		final String prop = sortOrder.getProperty();
 		final int isDesc = sortOrder.getDirection() == Sort.Direction.DESC ? -1 : 1;
 		Collections.sort(members, new Comparator<Member>() {
-			@Override
 			public int compare(Member o1, Member o2) {
 				if ("name".equals(prop)) {
 					return o1.getName().compareTo(o2.getName()) * isDesc;
